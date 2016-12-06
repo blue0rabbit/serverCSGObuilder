@@ -8,8 +8,11 @@ import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,11 +29,12 @@ public class ServerGUI extends JFrame implements ActionListener
 	JLabel signal = new JLabel("OFF");
 	JPanel panel = new JPanel();
 
-
+	
+	//wyswietlanie sie komend na jlabel
 	public ServerGUI()
 	{
 		super("Serwer CS:GO");
-		setSize(200, 200);
+		setSize(200, 250);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		panel.setLayout(new GridLayout(2, 3, 10, 10));
 				
@@ -53,9 +57,11 @@ public class ServerGUI extends JFrame implements ActionListener
 	public void actionPerformed(ActionEvent evt) 
 	{
 		Object source = evt.getSource();
-		List cmdAndArgs = Arrays.asList("cmd", "/c", "start.bat");
+		List cmdAndArgs = Arrays.asList("cmd", "/c", " start.bat");
+		List cmdAndArgsPrim = Arrays.asList("cmd", null, "steamcmd +runscript csgo_server_trigger.txt");
 		//List cmdAndArgsBuild = Arrays.asList()
-		File dir = new File("C:/serwer");
+		File dir = new File("D:\\serwer\\");
+		File dirPrim = new File("D:\\serwer\\steamcmd");
 		
 		if(source==start)
 		{
@@ -63,9 +69,21 @@ public class ServerGUI extends JFrame implements ActionListener
 			{
 				ProcessBuilder pb = new ProcessBuilder(cmdAndArgs);
 				pb.directory(dir);
+
 				try {
 					Process p = pb.start();
-				} catch (IOException e) {
+					InputStream is = p.getInputStream();
+			        InputStreamReader isr = new InputStreamReader(is);
+			        BufferedReader br = new BufferedReader(isr);
+			        String line;
+			        System.out.printf("Output of running %s is:\n",
+			               (cmdAndArgs));
+			        while ((line = br.readLine()) != null) 
+			        {
+			            System.out.println(line);
+			        }
+				} catch (IOException e) 
+				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					panel.setToolTipText("Umiesc plik start.bat w folderze C:/serwer!");
@@ -76,7 +94,7 @@ public class ServerGUI extends JFrame implements ActionListener
 			else
 			{
 				try {
-					Runtime.getRuntime().exec("taskkill /F /IM "+ ".exe");
+					Runtime.getRuntime().exec("taskkill /F /IM "+ "srcds.exe");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -87,6 +105,26 @@ public class ServerGUI extends JFrame implements ActionListener
 		}
 		if(source==build)
 		{
+			
+			ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "steamcmd +runscript csgo_server_trigger.txt");
+			pb.directory(dirPrim);
+			pb.redirectErrorStream(true);
+			try {
+				Process p = pb.start();
+				InputStream is = p.getInputStream();
+		        InputStreamReader isr = new InputStreamReader(is);
+		        BufferedReader br = new BufferedReader(isr);
+		        String line;
+		        System.out.printf("Output of running %s is:\n",
+		               (cmdAndArgsPrim));
+		        while ((line = br.readLine()) != null) 
+		        {
+		            System.out.println(line);
+		        }
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 		}
 	}
