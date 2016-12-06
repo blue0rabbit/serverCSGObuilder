@@ -20,26 +20,33 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+
 import java.awt.event.*;
 
 public class ServerGUI extends JFrame implements ActionListener
 {
 	JButton start = new JButton("Start server");
 	JButton build = new JButton("Build server");
-	JLabel signal = new JLabel("OFF");
+	JTextArea signal = new JTextArea("Pozdrowienia od Agatki<3 Status budowy serwera:");
+	JTextArea status = new JTextArea("");
 	JPanel panel = new JPanel();
+	//JTextArea autor = new JTextArea("Z pozdrowieniami od radioaktywnej <3");
 
 	
 	//wyswietlanie sie komend na jlabel
 	public ServerGUI()
 	{
 		super("Serwer CS:GO");
-		setSize(200, 250);
+		setSize(400, 200);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		panel.setLayout(new GridLayout(2, 3, 10, 10));
 				
 		panel.add(start); 
 		panel.add(build);
+		panel.add(signal);
+		panel.add(status);
+		//panel.add(autor);
 		start.addActionListener(this);
 		build.addActionListener(this);
 		
@@ -69,26 +76,18 @@ public class ServerGUI extends JFrame implements ActionListener
 			{
 				ProcessBuilder pb = new ProcessBuilder(cmdAndArgs);
 				pb.directory(dir);
-
-				try {
+				
+				try 
+				{
 					Process p = pb.start();
-					InputStream is = p.getInputStream();
-			        InputStreamReader isr = new InputStreamReader(is);
-			        BufferedReader br = new BufferedReader(isr);
-			        String line;
-			        System.out.printf("Output of running %s is:\n",
-			               (cmdAndArgs));
-			        while ((line = br.readLine()) != null) 
-			        {
-			            System.out.println(line);
-			        }
-				} catch (IOException e) 
+				}
+				catch (IOException e) 
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					panel.setToolTipText("Umiesc plik start.bat w folderze C:/serwer!");
+					signal.setText("Umiesc plik start.bat w folderze C:/serwer!");
 				}
-				panel.setBackground(Color.green);
+				status.setBackground(Color.green);
 				start.setText("Stop");
 			}
 			else
@@ -99,7 +98,7 @@ public class ServerGUI extends JFrame implements ActionListener
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				panel.setBackground(Color.red);
+				status.setBackground(Color.red);
 				start.setText("Start");
 			}
 		}
@@ -115,11 +114,18 @@ public class ServerGUI extends JFrame implements ActionListener
 		        InputStreamReader isr = new InputStreamReader(is);
 		        BufferedReader br = new BufferedReader(isr);
 		        String line;
-		        System.out.printf("Output of running %s is:\n",
-		               (cmdAndArgsPrim));
+		        //signal.setText("Output of running %s is:\n",
+		               //(cmdAndArgsPrim));
 		        while ((line = br.readLine()) != null) 
 		        {
-		            System.out.println(line);
+		            signal.setText(line);
+		        }
+		        try {
+		            int exitValue = p.waitFor();
+		            System.out.println("\n\nExit Value is " + exitValue);
+		        } catch (InterruptedException e) {
+		            // TODO Auto-generated catch block
+		            e.printStackTrace();
 		        }
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
